@@ -157,7 +157,7 @@ def test(args, generator_list, model, repeat=0, outdir='graphs/'):
     if not os.path.isdir(outdir):
         os.mkdir(outdir)
     # generate graph batch
-    for generator in generator_list:
+    for i,generator in enumerate(generator_list):
         time0 = time.time()
         time_model = 0
         generator.reset()
@@ -178,6 +178,11 @@ def test(args, generator_list, model, repeat=0, outdir='graphs/'):
             time3 - time0, time_model))
         logging.info('Generate time for 1 graph: total {:.4f}, model {:.4f}'.format(
             time3 - time0, time_model))
+        outdir_single_graph = outdir + args.name + '_' + str(args.epoch_load) + '_' + str(repeat) + '/'
+        if not os.path.isdir(outdir_single_graph):
+            os.mkdir(outdir_single_graph)
+        save_graph_list([generator.graph],  outdir_single_graph + str(i) + '.dat')
+
     graphs = [generator.graph for generator in generator_list]
     save_graph_list(graphs, outdir + args.name+'_'+str(args.epoch_load)+'_'+str(repeat) + '.dat')
     node_nums = [graph.number_of_nodes() for graph in graphs]

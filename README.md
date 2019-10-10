@@ -29,6 +29,7 @@ pip install tensorboardX
 
 ## Example Run
 
+You can try out the following 4 steps one by one.
 
 1. Preprocess data
 ```bash
@@ -39,11 +40,17 @@ python
 ```bash
 python main_train.py --epoch_num 201
 ```
+After this step, trained G2SAT models will be saved in `model/` directory.
 
 3. Use G2SAT to generate Formulas
 ```bash
 python main_test.py --epoch_load 200
 ```
+After this step, generated graphs will be saved to `graphs/` directory. 1 graph is generated out of 1 template.
+ 
+Graphs will be saved in 2 formats: a single `.dat` file containing all the generated graphs; a directory where each generated graph is saved as a single `.dat` file. 
+
+(It may take fairly long time: Runing G2SAT is fast, but updating networkx takes the majority of time in current implementation.)
 
 4. Analyze results
 ```bash
