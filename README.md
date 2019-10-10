@@ -27,7 +27,7 @@ pip install tensorboardX
 ```
 
 
-## Run
+## Example Run
 
 
 1. Preprocess data
@@ -37,12 +37,12 @@ python
 
 2. Train G2SAT
 ```bash
-python main_train.py --model GCN --num_layers 3
+python main_train.py --epoch_num 201
 ```
 
 3. Use G2SAT to generate Formulas
 ```bash
-python main_test.py --model GCN --num_layers 3
+python main_test.py --epoch_load 200
 ```
 
 4. Analyze results

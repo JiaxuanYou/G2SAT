@@ -50,11 +50,11 @@ def make_args():
     parser.add_argument('--lr', dest='lr', default=1e-3, type=float)
     parser.add_argument('--yield_prob', dest='yield_prob', default=1, type=float)
     parser.add_argument('--clause_ratio', dest='clause_ratio', default=1.1, type=float)
-    parser.add_argument('--epoch_num', dest='epoch_num', default=2000, type=int)
+    parser.add_argument('--epoch_num', dest='epoch_num', default=2001, type=int)
     parser.add_argument('--epoch_log', dest='epoch_log', default=50, type=int) # test every
-    parser.add_argument('--epoch_test', dest='epoch_test', default=2001, type=int) # test start from when
+    parser.add_argument('--epoch_test', dest='epoch_test', default=2001, type=int) # test start from when. Default not doing test.
     parser.add_argument('--epoch_save', dest='epoch_save', default=50, type=int) # save every
-    parser.add_argument('--epoch_load', dest='epoch_load', default=1950, type=int) # test start from when
+    parser.add_argument('--epoch_load', dest='epoch_load', default=2000, type=int) # test start from when
     parser.add_argument('--gen_graph_num', dest='gen_graph_num', default=1, type=int) # graph num per template
     parser.add_argument('--sample_size', dest='sample_size', default=20000, type=int) # number of action samples
     parser.add_argument('--repeat', dest='repeat', default=0, type=int)

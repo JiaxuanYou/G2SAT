@@ -153,21 +153,6 @@ class Dataset_sat(torch.utils.data.Dataset):
             nodes_par1 = self.nodes_par1_list[id].copy()
             nodes_par2 = self.nodes_par2_list[id].copy()
 
-            # set up edge and edge dict
-            # edge_index = np.array(list(graph.edges))
-            # edge_index = np.concatenate((edge_index, edge_index[:, ::-1]), axis=0)
-            # key = tuple(map(tuple, edge_index))
-            # edge_index = torch.from_numpy(edge_index).long().permute(1, 0)
-            # val = range(graph.number_of_edges()*2)
-            # edge_dict = dict(zip(key,val))
-            # set up node
-            # x = torch.zeros((graph.number_of_edges()+1, 3))  # 3 types of nodes
-            # x[:len(nodes_par1) // 2, 0] = 1
-            # x[len(nodes_par1) // 2:len(nodes_par1), 1] = 1
-            # x[len(nodes_par1):, 2] = 1
-            # data = Data(x=x, edge_index=edge_index)
-            # data = Data(edge_index=edge_index)
-
             while True:
                 degree_info = list(graph.degree(nodes_par2))
                 random.shuffle(degree_info)

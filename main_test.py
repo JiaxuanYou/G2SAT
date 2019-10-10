@@ -22,9 +22,12 @@ else:
     print('Using CPU')
 device = torch.device('cuda:'+str(args.cuda) if args.gpu else 'cpu')
 
-### use graph templates
+### create graph templates to initailize generator
+if not os.path.isdir('graphs/'):
+    os.mkdir('graphs/')
 template_name = 'graphs/template_small.dat'
 train_name = 'graphs/train_small.dat'
+
 if args.recompute_template or not os.path.isfile(template_name):
     graphs_train, nodes_par1s_train, nodes_par2s_train = load_graphs_lcg(data_dir='dataset/train_set/',
                                                                          stats_dir='dataset/')
