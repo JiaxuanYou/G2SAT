@@ -1,0 +1,9 @@
+.idea/
+result_stats/
+model/
+logging/
+graphs/
+formulas/
+fig/
+
+*.py~
