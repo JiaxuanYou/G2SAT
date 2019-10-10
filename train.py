@@ -31,7 +31,9 @@ import logging
 
 
 def train(args, loader_train, loader_test, model, optimizer,
-          writer_train, writer_test, device, generator_list=None):
+          writer_train, writer_test, device, save_dir='model/'):
+    if not os.path.isdir(save_dir):
+        os.mkdir(save_dir)
     loss_func = nn.BCEWithLogitsLoss()
     out_act = nn.Sigmoid()
     for epoch in range(args.epoch_num):
@@ -107,7 +109,7 @@ def train(args, loader_train, loader_test, model, optimizer,
         writer_train.add_scalar('pred_np_mean', pred_np_mean, epoch)
 
         if epoch % args.epoch_save == 0:
-            torch.save(model.state_dict(), 'model/'+args.name+str(epoch))
+            torch.save(model.state_dict(), save_dir+args.name+str(epoch))
             print('model saved!')
 
         if epoch % args.epoch_log == 0 and epoch>=args.epoch_test:
@@ -151,7 +153,7 @@ def train(args, loader_train, loader_test, model, optimizer,
 
 
 
-def test(args, generator_list, model, repeat=0, outdir='graphs/', model_fname=''):
+def test(args, generator_list, model, repeat=0, outdir='graphs/'):
     if not os.path.isdir(outdir):
         os.mkdir(outdir)
     # generate graph batch
@@ -177,8 +179,7 @@ def test(args, generator_list, model, repeat=0, outdir='graphs/', model_fname=''
         logging.info('Generate time for 1 graph: total {:.4f}, model {:.4f}'.format(
             time3 - time0, time_model))
     graphs = [generator.graph for generator in generator_list]
-    # save_graph_list(graphs, outdir + args.name +str(args.epoch_load)+str(args.clause_ratio)+str(args.sample_size)+'_'+str(repeat) + '.dat')
-    save_graph_list(graphs, outdir + model_fname+'_'+str(repeat) + '.dat')
+    save_graph_list(graphs, outdir + args.name+'_'+str(args.epoch_load)+'_'+str(repeat) + '.dat')
     node_nums = [graph.number_of_nodes() for graph in graphs]
     edge_nums = [graph.number_of_edges() for graph in graphs]
     print('Num {}, Node {} {} {}, Edge {} {} {}'.format(

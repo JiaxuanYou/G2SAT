@@ -8,7 +8,6 @@ import time
 
 import matplotlib.pyplot as plt
 import io
-import imageio
 import pickle
 import pdb
 import copy
