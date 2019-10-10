@@ -42,25 +42,13 @@ if args.recompute_template or not os.path.isfile(template_name):
     dataset_train = Dataset_sat(graphs_train, nodes_par1s_train, nodes_par2s_train, epoch_len=5000,
                                 yield_prob=args.yield_prob, speedup=False)
 
-    graph_templates, nodes_par1s, nodes_par2s = dataset_train.get_template()
+    graph_templates, nodes_par1s, nodes_par2s = dataset_train.get_template_fast()
     save_graph_list(graph_templates,template_name, has_par=True,nodes_par1_list=nodes_par1s,nodes_par2_list=nodes_par2s)
     print('Template saved!')
 else:
     graph_templates, nodes_par1s, nodes_par2s = load_graph_list(template_name, has_par=True)
     print('Template loaded!')
 
-# ##filter for small templates
-# graph_templates_new = []
-# nodes_par1s_new = []
-# nodes_par2s_new = []
-# for i in range(len(graph_templates)):
-#     if graph_templates[i].number_of_nodes()<2000:
-#         graph_templates_new.append(graph_templates[i])
-#         nodes_par1s_new.append(nodes_par1s[i])
-#         nodes_par2s_new.append(nodes_par2s[i])
-# graph_templates = graph_templates_new
-# nodes_par1s = nodes_par1s_new
-# nodes_par2s = nodes_par2s_new
 
 print('Template num', len(graph_templates))
 
