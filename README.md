@@ -33,7 +33,8 @@ You can try out the following 4 steps one by one.
 
 1. Preprocess data
 ```bash
-python 
+python conversion.py --src dataset/train_formulas/ -s dataset/train_set/
+python conversion.py --src dataset/test_formulas/ -s dataset/test_set/
 ```
 
 2. Train G2SAT
