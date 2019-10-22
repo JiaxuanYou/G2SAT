@@ -7,14 +7,11 @@ import numpy as np
 import scipy as sp
 from scipy import stats
 import math
-# from pulp import *
+from pulp import *
 from optparse import OptionParser
 import matplotlib as plt
 import community
 import csv
-import os
-import random
-import string
 
 """
 This file takes in a dimacs file, calculates the features of it and stores them in a
@@ -23,32 +20,20 @@ This file takes in a dimacs file, calculates the features of it and stores them 
 
 def main():
     parser = getParser()
-    fname_prefix = 'GCN_3_32_preTrue_dropFalse_yield1_01950110000_0'
-    # fname_prefix = 'train'
-
-    scale_free = "eval/scalefree"
 
     (options, args) = parser.parse_args()
 
-    # path_to_formulas = options.path_to_formulas
-    path_to_formulas = 'formulas/'
+    path_to_formulas = options.path_to_formulas
     benchmark_set_name = path_to_formulas.split("/")[-2]
     out_name = options.out_file
-    if not out_name:
-        out_name_raw = path_to_formulas + "../result_stats/{}_graph_metrics_raw".format(benchmark_set_name)+fname_prefix+".csv"
-        out_name_analysis = path_to_formulas + "../result_stats/{}_graph_metrics_analysis".format(benchmark_set_name)+fname_prefix+".csv"
+    scale_free = options.scale_free
 
-    title = ["num. vars", "num. clauses", "VIG clust.", "LIG clust.",
-             "mod. VIG", "mod. LIG", "mod. VCG", "mod. LCG", "var. alpha", "clause alpha"]
+    title = [ "num. vars", "num. clauses", "VIG clust.",
+              "mod. VIG", "mod. LCG", "mod. VCG", "mod. LCG",
+              "var. alpha", "clause alpha"]
 
     lines = []
-    lines.append(title)
-    filenames = []
     for filename in os.listdir(path_to_formulas):
-        if fname_prefix in filename:
-            filenames.append(filename)
-    sorted(filenames)
-    for filename in filenames:
         source = path_to_formulas + filename
         cnf = open(source)
         content = cnf.readlines()
@@ -66,16 +51,8 @@ def main():
         formula = content[1:]
         formula = to_int_matrix(formula)
         (formula, num_clauses) = remove_duplicate(formula)
-
+        
         num_vars = int(parameters[2])
-
-        if options.bin_flag:
-            formula = get_binary_subgraph(formula)
-            num_clauses = len(formula)
-
-        if options.long_flag:
-            formula = get_long_subgraph(formula)
-            num_clauses = len(formula)
 
         assert (get_vacuous(formula) == 0)
         assert(num_vars != 0)
@@ -98,59 +75,35 @@ def main():
         preprocess_VCG(formula, VCG, num_vars) # Build a VCG
         preprocess_LCG(formula, LCG, num_vars) # Build a VCG
 
-
-
         features = []
         features.append(num_vars)
         features.append(num_clauses)
         features += [nx.average_clustering(VIG)]
-        features += [nx.average_clustering(LIG)]
-        features += get_modularities(VIG, LIG, VCG, LCG, graphic = options.plot_flag) # Modularities of VIG & VCG
+        features += get_modularities(VIG, LIG, VCG, LCG) # Modularities of VIG & VCG
         features += get_scale_free(source, scale_free)
         lines.append(features)
 
-    analysis = []
-    analysis.append(title)
-    analysis.append(np.mean(lines[1:], axis = 0))
-    analysis.append(np.std(lines[1:], axis = 0))
-    with open(out_name_analysis, 'a') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerows(analysis)
-
-    with open(out_name_raw, 'a') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerows(lines)
+    if out_name != None:
+        with open(out_name, 'a') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(title, lines)
+    else:
+        lines = np.array(lines)
+        means = np.nanmean(lines, axis=0)
+        std = np.nanstd(lines, axis=0)
+        for i, column_name in enumerate(title):
+            print("mean/std {}: {}/{}".format(column_name, means[i], std[i]))
 
 def getParser():
     parser = OptionParser(usage="usage: %prog [options] formula outfile",
                           version="%prog 1.0")
-    parser.add_option("-b", "--bin",
-                      dest="bin_flag",
-                      action="store_true",
-                      default=False,
-                      help="get stats of only binary clauses")
-    parser.add_option("-l", "--long",
-                      dest="long_flag",
-                      action="store_true",
-                      default=False,
-                      help="get stats of only long clauses")
     parser.add_option("-o", "--out",
                       dest="out_file",
-                      default=False,
+                      default=None,
                       help="save stats into a file")
-    parser.add_option("-t", "--title",
-                      dest="title_flag",
-                      action="store_true",
-                      default=False,
-                      help="add a row of feature names to the file")
-    parser.add_option("-p", "--plot",
-                      dest="plot_flag",
-                      action="store_true",
-                      default=False,
-                      help="plot the VIG of the formula")
     parser.add_option("-s", "--scale-free",
                       dest="scale_free",
-                      default=False,
+                      default=None,
                       help="enter the path to the scale-free computing binary")
     parser.add_option("-d", "--path-to-formulas",
                       dest="path_to_formulas",
@@ -335,7 +288,7 @@ def get_long_subgraph(formula):
 
 #***********************************************Modularity-related features ***************************************
 
-def get_modularities(VIG, LIG, VCG, LCG, graphic):
+def get_modularities(VIG, LIG, VCG, LCG):
     """
     Returns the modularities of VIG, LIG and VCG representations of the formula
     """
@@ -353,11 +306,6 @@ def get_modularities(VIG, LIG, VCG, LCG, graphic):
     part_LCG = community.best_partition(LCG)
     mod_LCG = community.modularity(part_LCG, LCG) # Modularity of LCG
 
-
-    if graphic:
-        values = [part_VCG.get(node) for node in VCG.nodes()]
-        nx.draw_spring(VCG, cmap=plt.get_cmap('jet'), node_color = values, node_size=30, with_labels=False)
-        plt.show()
     return [mod_VIG, mod_LIG, mod_VCG, mod_LCG]
 
 #------------------------------------------- Subprocesses -------------------------------------------#
@@ -365,19 +313,17 @@ def get_modularities(VIG, LIG, VCG, LCG, graphic):
 
 def get_scale_free(source, scale_free=False):
     feats = []
-    fname_temp = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))+".txt"
-    # f = open("blah"+".txt", "w")
-    f = open(fname_temp, "w")
+    f = open("blah.txt", "w")
     if scale_free:
         subprocess.call([scale_free, source], stdout=f)
     else:
-        subprocess.call(["eval/scalefree", source], stdout=f)
+        subprocess.call(["/Users/anwu/Monkeyswedding/Projects/SAT_GAN/sat_gen/cpp/scalefree", source], stdout=f)
     f.close()
-    with open(fname_temp, 'r') as f:
+    with open("blah.txt", 'r') as f:
         for line in f.readlines():
             if ("alpha" in line):# or ("min. value" in line) or ("beta" in line) or ("max. error" in line):
                 feats.append(line.split()[-1])
-    os.remove(fname_temp)
+    os.remove("blah.txt")
     return list(map(float, feats))
 
 #-----------------------------------------------statistics-------------------------------------------------#
