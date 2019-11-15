@@ -48,7 +48,7 @@ After this step, trained G2SAT models will be saved in `model/` directory.
 python main_test.py --epoch_load 200
 ```
 After this step, generated graphs will be saved to `graphs/` directory. 1 graph is generated out of 1 template.
- 
+
 Graphs will be saved in 2 formats: a single `.dat` file containing all the generated graphs; a directory where each generated graph is saved as a single `.dat` file. 
 
 (It may take fairly long time: Runing G2SAT is fast, but updating networkx takes the majority of time in current implementation.)
@@ -75,5 +75,9 @@ tensorboard --logdir runs
 ## Citation
 If you find this work useful, please cite our paper:
 ```latex
-
+@article{you2019g2sat,
+  title={G2SAT: Learning to Generate SAT Formulas},
+  author={You, Jiaxuan and Wu, Haoze and Barrett, Clark and Ramanujan, Raghuram and Leskovec, Jure},
+  journal={NeurIPS},
+  year={2019}
 ```
