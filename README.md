@@ -1,7 +1,7 @@
 # G2SAT: Learning to Generate SAT Formulas
 This repository is the official PyTorch implementation of "G2SAT: Learning to Generate SAT Formulas".
 
-[Jiaxuan You*](https://cs.stanford.edu/~jiaxuan/), [Haoze Wu*](https://anwu1219.github.io/), [Clark Barrett](https://theory.stanford.edu/~barrett/), [Raghuram Ramanujan](https://www.davidson.edu/people/raghu-ramanujan), [Jure Leskovec](https://cs.stanford.edu/people/jure/index.html), [Position-aware Graph Neural Networks](http://proceedings.mlr.press/v97/you19b/you19b.pdf), NeurIPS 2019.
+[Jiaxuan You*](https://cs.stanford.edu/~jiaxuan/), [Haoze Wu*](https://anwu1219.github.io/), [Clark Barrett](https://theory.stanford.edu/~barrett/), [Raghuram Ramanujan](https://www.davidson.edu/people/raghu-ramanujan), [Jure Leskovec](https://cs.stanford.edu/people/jure/index.html), [G2SAT: Learning to Generate SAT Formulas](https://arxiv.org/abs/1910.13445), NeurIPS 2019.
 
 ## Installation
 
@@ -33,8 +33,8 @@ You can try out the following 4 steps one by one.
 
 1. Preprocess data
 ```bash
-python conversion.py --src dataset/train_formulas/ -s dataset/train_set/
-python conversion.py --src dataset/test_formulas/ -s dataset/test_set/
+python eval/conversion.py --src dataset/train_formulas/ -s dataset/train_set/
+python eval/conversion.py --src dataset/test_formulas/ -s dataset/test_set/
 ```
 
 2. Train G2SAT
@@ -80,4 +80,5 @@ If you find this work useful, please cite our paper:
   author={You, Jiaxuan and Wu, Haoze and Barrett, Clark and Ramanujan, Raghuram and Leskovec, Jure},
   journal={NeurIPS},
   year={2019}
+  }
 ```
